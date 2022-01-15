@@ -74,10 +74,10 @@ def clean_test_data(df):
     """
     # Drop unused columns
     dropped_cols = ['id', 'wpt_name', 'num_private',
-                    'region', 'recorded_by', 'scheme_name',
+                    'recorded_by', 'scheme_name',
                     'extraction_type_group', 'payment_type',
-                    'group_value', 'quantity_group',
-                    'source_type', 'waterpoint_type']
+                    'quality_group', 'quantity_group',
+                    'source_type', 'waterpoint_type_group']
     clean = df.drop(columns=dropped_cols)
 
     # Fix input errors
@@ -153,6 +153,10 @@ def clean_test_data(df):
     # Add missing marker for amount_tsh
     clean['missing_amount_tsh'] = missing_indicator(clean.replace(0, np.nan), 'amount_tsh')
 
+    # Making region_district to properly group districts
+    clean['region_district'] = clean['region']+ "-" + clean['district_code'].astype('str')
+    clean = clean.drop(columns = ['region_code', 'district_code'])
+
     # Impute Population, Height and Lat-Long by location
     areas_lg_to_sm = ['region', 'region_district', 'ward', 'subvillage']
     impute_by_area_cols = ['population', 'longitude', 'latitude', 'gps_height']
@@ -167,8 +171,8 @@ def clean_test_data(df):
     clean = clean.drop(columns=labels)
 
     # Round Lat-Long
-    clean['longitude'] = round(clean['longitude'], 2)
-    clean['latitude'] = round(clean['latitude'],2)
+    clean['imputed_longitude'] = round(clean['imputed_longitude'], 2)
+    clean['imputed_latitude'] = round(clean['imputed_latitude'],2)
 
     # Drop subvillage due to high cardinality and colinearity with rounded lat-long
     clean = clean.drop(columns=['subvillage'])
