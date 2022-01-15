@@ -5,6 +5,7 @@ from sklearn.impute import MissingIndicator
 from sklearn.preprocessing import LabelEncoder
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
+from sklearn.metrics import accuracy_score, recall_score, f1_score, precision_score
 
 
 def missing_indicator(df, column):
@@ -57,7 +58,7 @@ def impute_by_area(df, areas_lg_to_sm, col_name):
                                                df['imputed_'+col_name])
         areas = areas[:-1]
     # Imputes the total mean for any remaining uncaptured values
-    df['imputed_'+col_name].fillna(df['imputed_'+col_name].mean())
+    df['imputed_'+col_name] = df['imputed_'+col_name].fillna(df['imputed_'+col_name].mean())
     return df
 
 
@@ -93,6 +94,11 @@ def clean_test_data(df):
     for col in error_cols:
         clean[col] = clean[col].str.lower()
     clean[error_cols] = clean[error_cols].replace(replace_dict)
+
+    # Group small Funders and Installers into 'other'
+    clean[['funder','installer']] = clean[['funder','installer']].where(
+        clean[['funder','installer']].apply(
+            lambda x: x.map(x.value_counts()))>=20, "other")
 
     # Impute Mode for Permit, Meeting
     clean['missing_meeting'] = missing_indicator(clean, 'public_meeting')
@@ -144,8 +150,11 @@ def clean_test_data(df):
     clean = clean.drop(
         columns=['month', 'recorded_year', 'construction_year', 'date_recorded'])
 
+    # Add missing marker for amount_tsh
+    clean['missing_amount_tsh'] = missing_indicator(clean.replace(0, np.nan), 'amount_tsh')
+
     # Impute Population, Height and Lat-Long by location
-    areas_lg_to_sm = ['region_code', 'district_code', 'ward', 'subvillage']
+    areas_lg_to_sm = ['region', 'region_district', 'ward', 'subvillage']
     impute_by_area_cols = ['population', 'longitude', 'latitude', 'gps_height']
     for col in impute_by_area_cols:
         clean = impute_by_area(clean, areas_lg_to_sm, col)
@@ -157,4 +166,18 @@ def clean_test_data(df):
             labels.append(col + '_' + label)
     clean = clean.drop(columns=labels)
 
+    # Round Lat-Long
+    clean['longitude'] = round(clean['longitude'], 2)
+    clean['latitude'] = round(clean['latitude'],2)
+
+    # Drop subvillage due to high cardinality and colinearity with rounded lat-long
+    clean = clean.drop(columns=['subvillage'])
+
     return clean
+
+def get_scores(model, X_test, y_test):
+    acc = accuracy_score(y_test, model.predict(X_test))
+    prec = precision_score(y_test, model.predict(X_test), average='weighted')
+    f1 = f1_score(y_test, model.predict(X_test), average='weighted')
+    rec = recall_score(y_test, model.predict(X_test), average='weighted')
+    return {'Accuracy': acc, "Precision": prec, "Recall": rec, "F1 Score": f1}
