@@ -53,7 +53,7 @@ The base CatBoost model had an accuracy of 80.5%
 
 ![catboost confusion matrix](images/base_catboost.png)
 
-### Over Sampled Models
+### Oversampled Models
 An oversampled version of each model was run and each was less accurate overall with only minimal gain in performance on the needs repair category. There is likely a lot of ranom noise in how pumps are classed into that category.
 
 ### Final Voting Model
