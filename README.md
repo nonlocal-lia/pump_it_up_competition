@@ -9,7 +9,7 @@ Tanzania like many developing nations has inadequate water infrustructure. Many 
 
 To figure out what pumps need to be fixed or maintained you could obviously send people into the field to manually inspect all the pumps, but this gets quite expensive. Having a decent classification model can allow the government or NGOs to make predictions about what pumps are most likely to have problems without having to directly inspect them and thus more efficiently allocate resources for replacements or repairs.
 
-# The Data
+## The Data
 
 The raw training data consisted of 59400 pumps with 39 recorded features beyond the id number. A full account of the cleaning process can be found in the [Cleaning and Feature Engineering notebook](./Cleaning_and_Feature_Engineering.ipynb)
 
@@ -24,7 +24,7 @@ Pump age and season features were engineered from the date that the pump data wa
 
 Clearly duplicate columns or those with unacceptable overlap were droped.
 
-# The Models
+## The Models
 
 To solve this classification problem, we first constructed a series of baseline models of different types. We then tuned their hyperparameters using a gridsearch and then formed a voting model from the four best performing models. A full account of the modeling process can be found in the [Modeling notebook](./Modeling.ipynb)
 
@@ -63,7 +63,30 @@ The final voting model had an accuracy of 81.9%
 
 ![voting confusion matrix](images/base_voting.png)
 
-### Limitations and Future Work
+## Feature Importance
+Mean permutation importance was used to calculate the most important features for the Random Forest, XGBoost, and Catboost models.
+
+![forest feature importance](images/forest_permutation_importance.png)
+
+![XGBoost feature importance](images/xgb_permutation_importance.png)
+
+![CatBoost feature importance](images/cat_permutation_importance.png)
+
+## Overall Results
+Here is a chart breaking down the performance of the models
+
+![results_table](images/results_table.png)
+
+The consistently most important features across the models were managment group and scheme as well as the quantity of water at the pump, the season the pump was tested and the size of the population using the pump.
+
+![Feature importance table](images/top10_important_features_table.png)
+
+## Conclusions and Recommendations
+Based on this analysis I would suggest that the government or any NGOs seeking to install pumps in Tanzania be very careful in the selection of who will manage the pump. It is also vitally important to engage in good water managment practices since depleteing the reserves of water in the pump areas obviously significantly impacts whether the pump will function in getting people water.
+
+It would also make sense to do a more systematic analysis of seasonal effects by observing the same pump in different seasons, which could help determin which pumps are function for part of the year and thus the population may need supplimental water from another source during dry seasons.
+
+## Limitations and Future Work
 
 The data given by the competition only covers a narrow range of time, if more data is captured in the future on the same pumps or a RCT was done, a more accurate analysis of what features affect the functioning of pumps could be done, as well as a more causal rather than correlative analysis of the effect of different variables.
 
