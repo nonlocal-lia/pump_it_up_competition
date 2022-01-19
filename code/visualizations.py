@@ -1,13 +1,63 @@
+from audioop import reverse
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 import scipy.stats as stats
+import time
+from sklearn.inspection import permutation_importance
 import matplotlib.pyplot as plt
 from matplotlib.axes._axes import _log as matplotlib_axes_logger
 import matplotlib.ticker as mticker
 import seaborn as sns
-plt.style.use('seaborn')
+large = 28
+med = 20
+small = 12
+params = {'axes.titlesize': large,
+          'legend.fontsize': med,
+          'figure.figsize': (15, 10),
+          'axes.labelsize': med,
+          'xtick.labelsize': med,
+          'ytick.labelsize': med,
+          'figure.titlesize': large}
+plt.rcParams.update(params)
+plt.style.use('seaborn-darkgrid')
 
+
+def plot_feature_importances(model, X_train, model_title = 'This', n_features = 10, sort_features = True, size=(15,8), save_name=None):
+    importances = model.feature_importances_
+    labels = []
+    for col in list(X_train.columns):
+        label = col.replace('_', ' ').title()
+        labels.append(label)
+    importances_df = pd.Series(importances, labels)
+    if sort_features:
+        importances_df = importances_df.sort_values(ascending=False)
+    plt.figure(figsize=size)
+    importances_df.head(n_features).sort_values().plot.barh()
+    plt.xlabel('Feature Importance')
+    plt.ylabel('Features')
+    plt.title('Feature Importances for {} Model'.format(model_title))
+    if save_name:
+        plt.savefig(f'images/{save_name}.png')
+    return plt.show()
+
+def plot_permutation_importance(model, X_test, y_test, model_title = 'This', n_features = 10, sort_features = True, size=(15,8), save_name=None):
+    result = permutation_importance(model, X_test, y_test)
+    labels = []
+    for col in list(X_test.columns):
+        label = col.replace('_', ' ').title()
+        labels.append(label)
+    importances_df = pd.Series(result.importances_mean, labels)
+    if sort_features:
+        importances_df = importances_df.sort_values(ascending=False)
+    plt.figure(figsize=size)
+    importances_df.head(n_features).sort_values().plot.barh()
+    plt.xlabel('Feature importance')
+    plt.ylabel('Features')
+    plt.title('Feature Importances for {} Model'.format(model_title))
+    if save_name:
+        plt.savefig(f'images/{save_name}.png')
+    return plt.show()
 
 def create_heatmap(df, size=(15,8), save_name=None):
     """
