@@ -2,12 +2,14 @@
 
 ## Problem
 
-Tanzania like many developing nations has inadequate water infrustructure. Many people throughout the country depend on local pumps constructed and funded by the government, NGOs, and various private individuals. Charitable and NGO resources seeking to help improve and maintain what infructure there is would be aided by knowledge of a number of things.
+Tanzania like many developing nations has inadequate water infrastructure. Many people throughout the country depend on local pumps constructed and funded by the government, NGOs, and various private individuals. Charitable and NGO resources seeking to help improve and maintain what infrastructure there is would be aided by knowledge of a number of things.
 
 * Where are there pumps that are broken or in need of repair to prevent failure?
 * What features of the pumps, areas, installers, etc. tend to be correlated with pump failure?
 
-To figure out what pumps need to be fixed or maintained you could obviously send people into the field to manually inspect all the pumps, but this gets quite expensive. Having a decent classification model can allow the government or NGOs to make predictions about what pumps are most likely to have problems without having to directly inspect them and thus more efficiently allocate resources for replacements or repairs.
+To figure out what pumps need to be fixed or maintained you could obviously send people into the field to manually inspect all the pumps, but this gets quite expensive. Having a decent classification model can allow the government or NGOs to make predictions about what pumps are most likely to have problems without having to directly inspect them and thus more efficiently allocate resources for replacements or repairs. 
+
+This model can also be made into a [basic app](https://share.streamlit.io/nonlocal-lia/pump_streamlit/main/front_end.py) for ease of use
 
 ## The Data
 
@@ -92,7 +94,7 @@ The data given by the competition only covers a narrow range of time, if more da
 
 ## For More Information
 
-Please review my full analysis in our Jupyter Notebooks or our presentation.
+Please review my full analysis in our [Jupyter Notebook](./technical_notebook.ipynb) or our [presentation](./Pump_Presentation.pdf)
 
 For any additional questions, please contact **Lia Elwonger lelwonger@gmail.com**
 
